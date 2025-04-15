@@ -1,0 +1,44 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Vehicle Alert Monitor</title>
+  <style>
+    body { background-color: black; color: white; font-family: sans-serif; text-align: center; padding-top: 100px; }
+    .alert { font-size: 3em; color: red; animation: blink 1s infinite; }
+    @keyframes blink {
+      0% { opacity: 1; }
+      50% { opacity: 0.2; }
+      100% { opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+  <div id="alert" class="alert"></div>
+
+  <script>
+    const PI_SERVER = "http://192.168.1.166:5000"; // <-- Replace with your Pi IP if needed
+
+    async function checkWarning() {
+      try {
+        const res = await fetch(PI_SERVER + "/get_warning");
+        const data = await res.json();
+        const alertBox = document.getElementById("alert");
+
+        if (data.type === "ambulance") {
+          alertBox.textContent = "🚑 Ambulance Approaching!";
+        } else if (data.type === "inner_wheel") {
+          alertBox.textContent = "⚠️ Inner Wheel Danger!";
+        } else {
+          alertBox.textContent = "";
+        }
+      } catch (e) {
+        console.error("Connection error", e);
+      }
+    }
+
+    setInterval(checkWarning, 1000);
+  </script>
+</body>
+</html>
